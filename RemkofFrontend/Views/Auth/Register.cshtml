@@ -1,0 +1,44 @@
+﻿@{
+    ViewData["Title"] = "Регистрация";
+}
+@model RemkofFrontend.ViewModels.RegisterModel
+
+
+<div class="container">
+    <div class="d-flex justify-content-center">
+        <div class="row justify-content-center align-self-center">
+            <div class="col flex-column p-3">
+                <h2 class="text-center mb-3">Регистрация</h2>
+                <form asp-action="Register" asp-controller="Auth" asp-anti-forgery="true">
+                    <div>
+                        <div class="row">
+                            <label asp-for="Username">Введите имя пользователя</label><br />
+                            <input type="text" asp-for="Username" class="form-control mb-3" />
+                            <span asp-validation-for="Username" class="text-danger" />
+                        </div>
+                        <div class="row">
+                            <label asp-for="Email">Введите Email</label><br />
+                            <input type="text" asp-for="Email" class="form-control mb-3" />
+                            <span asp-validation-for="Email" class="text-danger" />
+                        </div>
+                        <div class="row">
+                            <label asp-for="Password">Введите пароль</label><br />
+                            <input asp-for="Password" class="form-control mb-3" />
+                            <span asp-validation-for="Password" class="text-danger" />
+                        </div>
+                        <div class="row">
+                            <label asp-for="ConfirmPassword">Повторите пароль</label><br />
+                            <input asp-for="ConfirmPassword" class="form-control mb-3" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger" />
+                        </div>
+                        <div class="row">
+                            <input type="submit" value="Регистрация" class="btn btn-primary mb-3" />
+                    <div class="validation text-danger" asp-validation-summary="ModelOnly"></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+ 

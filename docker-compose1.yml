@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+    remkoffrontend:
+        container_name: remkof_frontend
+        image: ${DOCKER_REGISTRY-}remkoffrontend
+        build:
+            context: .
+            dockerfile: RemkofFrontend/Dockerfile
+        restart: always
+        ports: 
+            - "80:80"
+            - "443:443"
+        depends_on: 
+            - db
+        environment: 
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_URLS=https://+:443;http://+:80
+            - ASPNETCORE_Kestrel__Certificates__Default__Password=120900
+            - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+        volumes:
+            - ~/.aspnet/https:/https:ro
+        networks:
+            - network
+
+    db:
+        container_name: remkof_postgres
+        #build: PostgreSQL/
+        image: remkofdatabase
+        restart: always
+        environment: 
+            - POSTGRES_USER=remkof
+            - POSTGRES_PASSWORD=remkof
+            - POSTGRES_DB=remkof_db
+        ports:
+            - "5432:5432"
+        volumes:
+            - dbdata:/var/lib/postgresql/data
+        expose: 
+            - 5432
+        networks:
+            - network
+
+    #pgadmin:
+    #    container_name: remkof_pgadmin4_container
+    #    image: dpage/pgadmin4
+    #    restart: always
+    #    environment: 
+    #        PGADMIN_DEFAULT_EMAIL: admin@remkof.ru
+    #        PGADMIN_DEFAULT_PASSWORD: root
+    #    ports:
+    #        - "5050:80"
+    #    depends_on: 
+    #        - db
+    #    networks:
+    #        - network
+
+networks:
+    network:
+
+volumes:
+    dbdata:
+        driver: local

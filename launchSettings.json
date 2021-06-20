@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "serviceActions": {
+        "db": "StartWithoutDebugging",
+        "remkoffrontend": "StartDebugging"
+      },
+      "commandVersion": "1.0"
+    }
+  }
+}
