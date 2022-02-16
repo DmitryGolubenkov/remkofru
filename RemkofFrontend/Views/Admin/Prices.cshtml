@@ -1,4 +1,162 @@
-﻿@{
-    ViewData["Title"] = "Редактирование цен";
+﻿@using RemkofFrontend.ViewModels
 
-}
+@{
+    ViewData["Title"] = "Редактирование цен";
+ }
+
+ @model List<AdminServicePriceViewModel>
+
+ <div class="container">
+    <p class="alert alert-primary">Данная страница предназначена для, импорта и редактирования списка цен, отображаемого сайте. Список с внесёнными изменениями появится на странице remkof.ru/Prices только после сохранения.</p>
+        <div class="border rounded p-4 mb-3">
+            <div class="h5">Импорт списка цен</div>
+            <div class="alert alert-info">
+                <p>Список цен можно импортировать в виде файла ".csv", который можно создать с помощью Microsoft Excel. При этом требуется следующий формат файла: </p>
+                <ul>
+                    <li>Список цен должен находиться на первом листе файла.</li>
+                    <li>Название услуги пишется в колонке A. Пример: "Диагностика". Максимальное количество символов: 150</li>
+                    <li>Стоимость услуги пишется в колонке B. Стоимость задаётся в свободном формате, можно использовать любые цифры, буквы и символы. Пример: "от 500р.", "бесплатно (при согласии на ремонт)". Максимальное количество символов равно 50.</li>
+                    <li>Порядок рядов из файла будет сохранён.</li>
+                    <li>Для сохранения файла необходимо открыть меню "Файл"-> "Сохранить как..", и в открывшемся окне в графе "Тип файла" выбрать формат "CSV (Разделители - запятые) .csv". </li>
+                </ul>
+        </div>
+    <div class="alert alert-danger">Внимание: Данные из импортированного файла при сохранении заменят ранее загруженные данные.</div>
+
+    <div class="form-group border border-light">
+        <form asp-action="ProcessCsvFile" asp-controller="Admin" enctype="multipart/form-data">
+            <input type="file" class="form-control-file" name="uploadedFile" />
+            <input type="submit" class="btn btn-primary mt-3" value ="Импортировать" /> 
+        </form>
+        
+    </div>
+</div>
+    @if(ViewBag.IsParsedData) {
+        <div class="h5">Предпросмотр импортированных данных</div>
+        <p class="alert alert-info">Данные были успешно обработаны сервером. Проверьте корректность данных и нажмите на кнопку "Сохранить и опубликовать" для его публикации на сайте. Кнопка "Отменить импорт" удалит импортированные данные.</p>
+        //Выводим данные из файла и кнопку для сохранения
+        <form method="post" asp-action="CancelImport" asp-controller="Admin">
+            <input type="submit" class="btn btn-danger mb-3" value="Отменить импорт"/>
+        </form>
+        <form method="post" asp-action="SaveNewPrices" asp-controller="Admin">
+            <input type="submit" value="Сохранить и опубликовать" class="btn btn-primary mb-3" />
+
+            <table class="w-100 table-striped" cellpadding="8"> 
+                <thead>
+                    <tr class="border-bottom border-primary">
+                        <th>Название услуги</th>
+                        <th>Стоимость</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var price in Model)
+                {
+                    <tr scope="row" class="border-bottom border-dark-50">
+                        <td>@price.ServiceName</td>
+                        <td>@price.Price</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </form>
+    }
+    else
+    {
+        <div class="h5">Редактирование таблицы цен</div>
+        <p class="alert alert-info">Здесь можно внести изменения в таблицу цен. Дополнительная колонка "Приоритет" отвечает за порядок отображения цен на сайте. Услуга с приоритетом 1 будет находиться выше, чем услуга с приоритетом 2 или 3. Приоритеты услуг не должны совпадать.
+        Колонка "Удаление" позволяет отметить услуги, которые будут удалены при сохранении без возможности восстановления.</p>
+
+        <div>
+            <div class="border rounded p-4">
+                <div class="h5">Добавить новую услугу</div> 
+                <form method="post" asp-action="AddPrice" asp-controller="Admin" class="justify-content-left">
+                    <div class="mb-2">
+                        <label class="mr-2">Название услуги</label>
+                        <input type="text" name="serviceName" maxlength="150" class="form-control"/>
+                    </div>
+                    <div class="mb-2">
+                        <label class="mr-2">Стоимость</label>
+                        <input type="text" name="price" maxlength="50" class="form-control"/>
+                    </div>
+                    <div>
+                        <label class="mr-2">Приоритет</label>
+                        <input name="viewPriority" type ="number" min = "0" step = "1" class="form-control"/>
+                    </div>
+                    <input type="submit" class="btn btn-primary mt-3" value="Добавить"/>
+                </form>
+            
+                @if(ViewBag.AddPriceSuccess is not null)
+                {
+                    @if(ViewBag.AddPriceSuccess)
+                    {
+                        <div class="alert alert-success mt-3">Новая услуга успешно сохранена.</div>
+                    }
+                else
+                {
+                    <div class="alert alert-danger mt-3">
+                        <p class="mb-0">Во время сохранения произошла ошибка.</p>
+                        @if(ViewBag.AddPriceMessage is not null)
+                        {
+                            <hr /> 
+                            <p class="mb-0">
+                                @ViewBag.AddPriceMessage.ToString()
+                            </p> 
+                        }
+                    </div>
+                    
+                }
+            }
+            </div>
+        </div>
+
+        <div class="border rounded p-4 mt-3">
+            @using(Html.BeginForm("Prices", "Admin", FormMethod.Post))
+        {
+            <div class="h5">Таблица</div>
+            <input type="submit" class="btn btn-primary mb-3" value="Сохранить изменения"/>
+            @if(ViewBag.PricesUpdateSuccess is not null)
+            {
+                if(ViewBag.PricesUpdateSuccess) 
+                {
+                    <div class="alert alert-success">
+                        <p>Изменения успешно сохранены.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-danger">
+                        <p class="mb-0">Не удалось сохранить изменения.</p>
+                        @if(@ViewBag.PricesUpdateMessage is not null) 
+                        {
+                            <hr />
+                            <p class="mb-0">@ViewBag.PricesUpdateMessage.ToString()</p>
+                        }
+                    </div>
+                }
+            }
+
+            <table class="w-100 table-striped" cellpadding="8">
+                <thead>
+                    <tr class="border-bottom border-primary">
+                        <th>Название услуги</th>
+                        <th>Стоимость</th>
+                        <th>Приоритет</th>
+                        <th>Удаление</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(int i = 0; i < Model.Count; i++) {
+                        <tr class="border-bottom border-dark-50">
+                            @Html.HiddenFor(x=>Model[i].ServiceId)
+                            <td>@Html.TextBoxFor(x=>Model[i].ServiceName, new {@class="form-control"})</td>
+                            <td>@Html.TextBoxFor(x=>Model[i].Price, new {@class="form-control"})</td>
+                            <td>@Html.EditorFor(x => Model[i].ViewPriority, new { htmlAttributes = new { @type = "number", @min = "0", @step = "1", @class="form-control"}})</td>
+                            <td>@Html.EditorFor(x=>Model[i].MarkedForRemoval, new {htmlAttributes = new {@class="custom-checkbox"}})</td>
+                        </tr>
+                    }
+                </tbody>
+             </table>
+
+        }
+    </div>
+    }
+</div>

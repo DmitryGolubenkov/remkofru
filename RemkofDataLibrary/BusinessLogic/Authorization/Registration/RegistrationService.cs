@@ -1,8 +1,6 @@
 ﻿using RemkofDataLibrary.DataAccess;
 using RemkofDataLibrary.Models;
 using System.Collections.Generic;
-using System.Data;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace RemkofDataLibrary.BusinessLogic.Authorization.Registration
@@ -10,13 +8,12 @@ namespace RemkofDataLibrary.BusinessLogic.Authorization.Registration
     public class RegistrationService : IRegistrationService
     {
         private readonly ISqlDataAccess _db;
-
         public RegistrationService(ISqlDataAccess db)
         {
             _db = db;
         }
 
-        public async Task<RegistrationStatus> RegisterUser(string username, string email, string password)
+        public async Task<RegistrationStatus> RegisterUser(string username, string email, string password, bool isActivated = false)
         {
             //1. Проверяем, существует ли этот пользователь
             // Если существует - возвращаем соответствующий статус
@@ -39,11 +36,12 @@ namespace RemkofDataLibrary.BusinessLogic.Authorization.Registration
                 Email = email,
                 PasswordHash = PasswordUtilities.ComputeSha256Hash(saltedPassword),
                 PasswordSalt = salt,
+                IsActivated = isActivated
             };
 
             //2. Добавляем нового пользователя в базу данных
             sql = $"INSERT INTO users (username, email, password_hash, password_salt, is_activated) VALUES ('{user.Username}', '{user.Email}', '{user.PasswordHash}', '{user.PasswordSalt}', '{user.IsActivated}')";
-            int? result = await _db.InsertDataIntoDatabase(sql, user);
+            int? result = await _db.InsertDataIntoDatabaseSingle(sql, user);
 
             if (result is null || result == -1)
                 return RegistrationStatus.Fail;

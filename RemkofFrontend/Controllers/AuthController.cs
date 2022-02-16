@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using RemkofDataLibrary.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using RemkofDataLibrary.BusinessLogic.Authorization;
 using RemkofDataLibrary.BusinessLogic.Authorization.Registration;
 using RemkofDataLibrary.BusinessLogic.Authorization.Login;
 using RemkofFrontend.ViewModels;
 using Microsoft.Extensions.Configuration;
+using RemkofDataLibrary.BusinessLogic;
+using RemkofDataLibrary.BusinessLogic.Admininstraror;
 
 namespace RemkofFrontend.Controllers
 {
@@ -19,14 +19,36 @@ namespace RemkofFrontend.Controllers
         private readonly ILogger<AuthController> _logger;
         private readonly IRegistrationService _registrationService;
         private readonly ILoginService _loginService;
+        private readonly IOptionsService _options;
+        private readonly IUsersService _usersService;
         private readonly IConfiguration _config;
-
-        public AuthController(ILogger<AuthController> logger, IRegistrationService registrationService, IConfiguration config, ILoginService loginService)
+        public AuthController(ILogger<AuthController> logger, IRegistrationService registrationService, IConfiguration config, ILoginService loginService, IOptionsService options, IUsersService usersService)
         {
             _logger = logger;
             _registrationService = registrationService;
             _config = config;
             _loginService = loginService;
+            _options = options;
+            _usersService = usersService;
+
+            //Если в системе не существует пользователей
+            if (_usersService.GetUsers().Result.Count == 0)
+                _ = CreateDefaultUser();
+        }
+
+        private async Task CreateDefaultUser()
+        {
+            var login = _config.GetSection("DefaultUserAuthData").GetValue<string>("login").Trim();
+            var email = _config.GetSection("DefaultUserAuthData").GetValue<string>("email").Trim();
+            var password = _config.GetSection("DefaultUserAuthData").GetValue<string>("password");
+
+            await _registrationService.RegisterUser(login, email, password, true);
+        }
+
+        [HttpGet]
+        public IActionResult Index()
+        {
+            return RedirectToAction("Login", "Auth");
         }
 
         [HttpGet]
@@ -38,12 +60,15 @@ namespace RemkofFrontend.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public async Task<IActionResult> Register()
         {
             if (User.Identity.IsAuthenticated)
                 return RedirectToAction("Index", "Admin");
-            if(_config.GetValue<bool>("RegistrationEnabled") == false)
+            if(!await _options.GetRegistrationSetting())
                 return RedirectToAction("Index", "Home");
+
+            if (TempData["IsAuthSuccessful"] is not null)
+                ViewBag.IsAuthSuccessful = TempData["IsAuthSuccessful"];
             return View();
         }
 
@@ -56,7 +81,7 @@ namespace RemkofFrontend.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -64,8 +89,9 @@ namespace RemkofFrontend.Controllers
                 switch(registrationStatus)
                 {
                     case RegistrationStatus.Success:
-                        await Authenticate(model.Username);
-                        return RedirectToAction("Index", "Admin");
+                        //Аккаунту нужна активация - поэтому не авторизуем, а просто подтверждаем успех.
+                        TempData["IsAuthSuccessful"] = true;
+                        return RedirectToAction("Register", "Auth");
                     case RegistrationStatus.UsernameAndEmailExists:
                         ModelState.AddModelError("Email", "Данный почтовый адрес уже зарегестрирован.");
                         ModelState.AddModelError("Username", "Пользователь с таким именем уже существует.");
@@ -81,9 +107,10 @@ namespace RemkofFrontend.Controllers
             ViewBag.Message = "Запрос не прошел валидацию";
             return View(model);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -101,6 +128,9 @@ namespace RemkofFrontend.Controllers
                         break;
                     case LoginStatus.IncorrectPassword:
                         ModelState.AddModelError("", "Пароль неверен.");
+                        break;
+                    case LoginStatus.UserNotActivated:
+                        ModelState.AddModelError("", "Пользователь не активирован.");
                         break;
                 }
             }

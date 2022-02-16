@@ -1,4 +1,4 @@
-USE remkof_db;
+--USE remkof_db;
 
 CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
@@ -11,9 +11,14 @@ CREATE TABLE IF NOT EXISTS users (
 
 CREATE TABLE IF NOT EXISTS prices (
 	price_id SERIAL PRIMARY KEY,
-	view_priority INT NOT NULL,
-	serv_name varchar(150) NOT NULL,
-	price varchar(50) NOT NULL
+	service_name varchar(150) NOT NULL,
+	price varchar(50) NOT NULL,
+	view_priority INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS options (
+    key_name varchar(150) PRIMARY KEY NOT NULL,
+    key_value varchar(150)
 );
 
 --CREATE TABLE item_for_sale(

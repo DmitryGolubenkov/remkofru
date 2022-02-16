@@ -8,6 +8,8 @@ using Microsoft.Extensions.Logging;
 using RemkofDataLibrary.BusinessLogic.Authorization.Registration;
 using RemkofDataLibrary.BusinessLogic.Authorization.Login;
 using RemkofDataLibrary.DataAccess;
+using RemkofDataLibrary.BusinessLogic.Admininstraror;
+using RemkofDataLibrary.BusinessLogic;
 
 namespace RemkofFrontend
 {
@@ -27,8 +29,15 @@ namespace RemkofFrontend
             services.AddControllersWithViews();
             services.AddRazorPages().AddRazorRuntimeCompilation();
             services.AddTransient<ISqlDataAccess, SqlDataAccess>();
-            services.AddTransient<IRegistrationService, RegistrationService>();
+            services.AddTransient<IPricesService, PricesService>();
+            services.AddSingleton<IRegistrationService, RegistrationService>();
             services.AddTransient<ILoginService, LoginService>();
+            services.AddTransient<IUsersService, UsersService>();
+            services.AddTransient<IOptionsService, OptionsService>();
+
+            services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
+            services.AddSession();
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options=> {
                 options.LoginPath = "/Auth/Login";
@@ -50,11 +59,22 @@ namespace RemkofFrontend
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            app.Use(async (context, next) =>
+            {
+                await next();
+                if (context.Response.StatusCode == 404)
+                {
+                    context.Request.Path = "/NotFound";
+                    await next();
+                }
+            });
+            app.UseStatusCodePagesWithRedirects("/NotFound/");
             app.UseHttpsRedirection();
             app.UseStaticFiles();
            
             app.UseRouting();
-
+            app.UseSession();
             app.UseAuthentication();
             app.UseAuthorization();
 

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <UserSecretsId>aspnet-remkof.ru_Frontend-6D311E75-3B8B-4E05-8F75-09CD747C2A39</UserSecretsId>
     <RootNamespace>RemkofFrontend</RootNamespace>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>

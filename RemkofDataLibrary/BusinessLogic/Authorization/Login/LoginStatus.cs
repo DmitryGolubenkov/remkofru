@@ -4,6 +4,7 @@
     {
         Success,
         IncorrectPassword,
-        IncorrectLogin
+        IncorrectLogin,
+        UserNotActivated
     }
 }

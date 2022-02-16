@@ -23,7 +23,11 @@ namespace RemkofDataLibrary.BusinessLogic.Authorization.Login
                 return LoginStatus.IncorrectLogin;
 
             User user = usersList[0];
-            //2. Солим пароль, проверяем, совпадают ли хэш в базе и хэш переданного пароля
+            //2. Проверяем, активирован ли пользователь.
+            if (!user.IsActivated)
+                return LoginStatus.UserNotActivated;
+
+            //3. Солим пароль, проверяем, совпадают ли хэш в базе и хэш переданного пароля
             string saltedPassword = PasswordUtilities.SaltPassword(password, user.PasswordSalt);
             string hash = PasswordUtilities.ComputeSha256Hash(saltedPassword);
 

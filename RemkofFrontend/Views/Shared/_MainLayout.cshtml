@@ -7,6 +7,7 @@
     <title>@ViewBag.Title</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <script src="/lib/feather/feather.min.js"></script>
 </head>
 <body>
 <header>
@@ -24,9 +25,10 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="align-content-center d-none d-md-block text-white">
-                    <div class="text-size-info"><i class="feather mr-2" data-feather="phone"></i>+7(905)512-42-22</div>
+                    <div class="text-size-info"><i class="feather mr-2" data-feather="phone"></i><a href="tel:+7(905)512-42-22" class="text-reset text-decoration-none">+7(905)512-42-22</a></div>
                     <div class="text-size-info"><i class="feather mr-2" data-feather="map-pin"></i>г. Подольск, Ул. Большая Серпуховская, 50</div>
                     <div class="text-size-info"><i class="feather mr-2" data-feather="mail"></i>d.r.o.n.6030@yandex.ru</div>
+                    <script>feather.replace()</script>
                 </div>
             </div>
             
@@ -37,22 +39,29 @@
         <div class="container container-fluid">
             <ul class="navbar-nav flex-sm-grow-1 text-center justify-content-center w-100">
                 <li class="nav-item @Html.IsSelected("Home", "Index", "nav-selected")"><a class="nav-link navig-link" asp-area="" asp-controller="Home" asp-action="Index">Главная</a></li>
-                <li class="nav-item @Html.IsSelected("Home", "Prices", "nav-selected")"><a class="nav-link navig-link" asp-area="" asp-controller="Home" asp-action="Prices">Наши цены</a></li>
+                <li class="nav-item @Html.IsSelected("Home", "Prices", "nav-selected")"><a class="nav-link navig-link" asp-area="" asp-controller="Home" asp-action="Prices">Цены</a></li>
+                <li class="nav-item @Html.IsSelected("Home", "ShippingAndPayment", "nav-selected")">
+                    <a class="nav-link navig-link" asp-area="" asp-controller="Home" asp-action="ShippingAndPayment">Доставка и оплата
+                    </a>
+                </li>
                 <li class="nav-item @Html.IsSelected("Home", "Contacts", "nav-selected")"><a class="nav-link navig-link" asp-area="" asp-controller="Home" asp-action="Contacts">Контакты</a></li>
                 <li class="nav-item @Html.IsSelected("Home", "About", "nav-selected")"><a class="nav-link navig-link" asp-area="" asp-controller="Home" asp-action="About">О нас</a></li>
                 @if (User.Identity.IsAuthenticated)
                     {
-                        <li class="nav-item @Html.IsSelected("Admin", "Prices", "nav-selected")">
-                            <a class="nav-link navig-link" asp-area="" asp-controller="Admin" asp-action="Prices">Цены</a>
+                        <li class="nav-item @Html.IsSelected("Admin", "Prices", "nav-selected ml-5")">
+                            <a class="nav-link navig-link" asp-area="" asp-controller="Admin" asp-action="Prices">Редактирование цен</a>
                         </li>
                         <li class="nav-item @Html.IsSelected("Admin", "Users", "nav-selected")">
                             <a class="nav-link navig-link" asp-area="" asp-controller="Admin" asp-action="Users">Пользователи</a>
+                        </li>
+                        <li class="nav-item @Html.IsSelected("Admin", "Options", "nav-selected")">
+                            <a class="nav-link navig-link" asp-area="" asp-controller="Admin" asp-action="Options">Параметры</a>
                         </li>
                         <li class="nav-item m-2">
                             <div class="text-info">Вы вошли, как @User.Identity.Name</div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link navig-link btn btn-primary" asp-area="" asp-controller="Auth" asp-action="Logout">Выход</a>
+                            <a class="nav-link navig-link nav-link" asp-area="" asp-controller="Auth" asp-action="Logout">Выход</a>
                         </li>
                     }
                 </ul>
@@ -61,16 +70,17 @@
 </header>
 
 
-<main role="main" class="pb-3 mt-3">
+<main role="main" class="pb-5 mt-4" style="margin-bottom: 90px">
     @RenderBody()
 </main>
 
 <footer class="border-top footer bg-dark box-shadow">
     <div class="container">
         <div class="flex-column text-white-50 m-2">
-            <div class="p-0 fontsize-small"><i class="feather mr-2" data-feather="phone"></i>+7(905)512-42-22</div>
+            <div class="p-0 fontsize-small"><i class="feather mr-2" data-feather="phone"></i><a href="tel:+7(905)512-42-22" class="text-reset text-decoration-none">+7(905)512-42-22</a></div>
             <div class="p-0 fontsize-small"><i class="feather mr-2" data-feather="mail"></i>d.r.o.n.6030@yandex.ru</div>
             <div class="p-0 fontsize-small"><i class="feather mr-2" data-feather="map-pin"></i>г. Подольск, Ул. Большая Серпуховская, 50</div>
+            <script>feather.replace()</script>
         </div>
 
 
@@ -80,11 +90,11 @@
     </div>
 </footer>
 
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/site.js" asp-append-version="true"></script>
 @RenderSection("Scripts", required: false)
-<script src="~/lib/feather/feather.min.js"></script>
-<script>feather.replace()</script>
+
+
 </body>
 </html>

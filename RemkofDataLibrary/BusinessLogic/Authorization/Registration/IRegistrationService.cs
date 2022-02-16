@@ -5,6 +5,6 @@ namespace RemkofDataLibrary.BusinessLogic.Authorization.Registration
 {
     public interface IRegistrationService
     {
-        Task<RegistrationStatus> RegisterUser(string username, string email, string password);
+        Task<RegistrationStatus> RegisterUser(string username, string email, string password, bool isActivated = false);
     }
 }

@@ -58,7 +58,7 @@ namespace RemkofDataLibrary.DataAccess
             }
         }
 
-        public async Task<int> InsertDataIntoDatabase<T>(string sql, T data)
+        public async Task<int> InsertDataIntoDatabaseSingle<T>(string sql, T data)
         {
             using (IDbConnection connection = new NpgsqlConnection(GetConnectionString()))
             {

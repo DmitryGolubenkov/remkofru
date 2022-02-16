@@ -2,7 +2,7 @@
 
 namespace RemkofFrontend.ViewModels
 {
-    public class RegisterModel
+    public class RegisterViewModel
     {
         [Required(ErrorMessage = "Имя пользователя не указано")]
         public string Username { get; set; }

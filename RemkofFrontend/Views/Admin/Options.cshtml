@@ -1,0 +1,27 @@
+﻿@using RemkofFrontend.ViewModels
+@{
+    ViewBag.Title="Параметры";
+}
+@model OptionsViewModel
+
+<div class="container">
+    <div class="h5">Параметры</div>
+    @using(Html.BeginForm("Options", "Admin", FormMethod.Post)) {
+        <div class="d-flex flex-row mb-3 justify-content-start">
+            <div class="mb-2 mr-3">Регистрация разрешена</div>
+            @Html.EditorFor(x=>x.IsRegistrationEnabled)
+        </div>
+        <input type="submit" class="btn btn-primary mb-3" value="Сохранить изменения"/>
+        }
+        @if(ViewBag.Success is not null)
+            if(ViewBag.Success)
+            {
+                <p class="alert alert-success">Настройки успешно сохранены.</p>
+            }
+            else
+            {
+                <p class="alert alert-danger">При сохранении настроек возникла ошибка.</p>
+            }
+
+    
+</div>

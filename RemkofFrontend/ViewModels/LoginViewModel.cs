@@ -2,7 +2,7 @@
 
 namespace RemkofFrontend.ViewModels
 {
-    public class LoginModel
+    public class LoginViewModel
     {
         [Required(ErrorMessage = "Не указан Username")]
         public string Username { get; set; }

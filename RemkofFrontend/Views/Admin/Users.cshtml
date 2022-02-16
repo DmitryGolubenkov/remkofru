@@ -2,14 +2,61 @@
     ViewData["Title"] = "Пользователи";
 }
 
+@using RemkofFrontend.ViewModels
+@model List<UserViewModel>
+
 <div class="container">
     <div class="h3">Пользователи</div>
-    <p>На данной странице можно просмотреть пользователей, зарегистрированных в системе, а также активировать и деактивировать их аккаунты. Также возможно переключить возможность регистрации новых пользователей.</p>
+    <p class="alert alert-primary">На данной странице можно просмотреть пользователей, зарегистрированных в системе, и управлять ими.</p>
 
-    <form method="post" >
-        <div class="row">
-            <div class="h5">Регистрация разрешена</div>
-            <input type="checkbox" name="isRegistrationAllowed" />
+    <div class="table-responsive">
+    @using (Html.BeginForm("UpdateUsers", "Admin", FormMethod.Post)) 
+                {
+    <table class="w-100 table-striped table-hover" cellpadding="8">
+        <thead>
+            <tr class="border-bottom border-primary">
+                <th scope="col">ID</th>  
+                <th scope="col">Имя пользователя</th>  
+                <th scope="col">Электронная почта</th>  
+                <th scope="col">Активация</th>  
+                <th scope="col">Удаление</th>  
+            </tr>
+        </thead>
+        <tbody>
+            @for(int i = 0; i < Model.Count; i++)
+                 {
+                        <tr scope="row" class="border-bottom border-dark-50">
+                            
+                            <td>@Html.DisplayFor(x=> Model[i].UserId) @Html.HiddenFor(x=>Model[i].UserId)</td>
+                            <td>@Html.EditorFor(x=> Model[i].Username, new {htmlAttributes = new {@class="form-control"}})</td>
+                            <td>@Html.EditorFor(x=> Model[i].Email, new {htmlAttributes = new {@class="form-control"}})</td>
+                            <td>@Html.EditorFor(x=> Model[i].IsActivated, new {htmlAttributes = new {@class="custom-checkbox"}})</td>
+                            <td>@Html.EditorFor(x=> Model[i].MarkedForRemoval, new {htmlAttributes = new {@class="custom-checkbox"}})</td>
+                        </tr>
+                    }
+                    
+        </tbody>
+    </table>
+    <input type="submit" class="btn btn-primary mt-3 mb-3" value="Сохранить изменения"/>
+        if(ViewBag.IsUsersUpdateSuccessful is not null)
+            {
+                if(ViewBag.IsUsersUpdateSuccessful)
+                {
+                    <p class="alert alert-success">Сохранение успешно завершено.</p>
+        }
+                else
+                {
+                    <div class="alert alert-danger">
+                     <p>Во время сохранения возникла ошибка. </p>
+                 
+                        @if(ViewBag.UsersUpdateMessage is not null)
+                        {
+                            <hr>
+                            <p class="mb-0">Сообщение: @ViewBag.UsersUpdateMessage.ToString()</p>
+                        }
+                    </div>
+                }
+            }  
+        }
         </div>
-    </form>
-</div>
+</div>    

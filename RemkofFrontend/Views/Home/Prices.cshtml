@@ -1,3 +1,25 @@
-﻿@{
+﻿@using RemkofFrontend.ViewModels
+@{
     ViewData["Title"] = "Наши цены";
 }
+
+@model List<ServicePriceViewModel>
+<div class="container">
+<p class="mb-3">Тут надо написать что-то про цены. Наверное.</p>
+    <table class="w-100 table-striped" cellpadding="18">
+        <thead>
+            <tr class="border-bottom border-primary">
+                <th class="w-50">Услуга</th>
+                <th class="w-50">Стоимость</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var price in Model) {
+                <tr scope="row" class="border-bottom border-dark-50">
+                    <td class="w-50">@price.ServiceName</td>
+                    <td class="w-50">@price.Price</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

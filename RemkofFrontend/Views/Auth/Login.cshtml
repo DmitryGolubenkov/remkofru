@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Авторизация"; 
 }
-@model RemkofFrontend.ViewModels.LoginModel
+@model RemkofFrontend.ViewModels.LoginViewModel
 
 <div class="container">
     <div class="d-flex justify-content-center">
@@ -12,14 +12,14 @@
                     
                 <div class="row">
                     <input type="text" id="login" class="form-control mb-3" name="username" placeholder="Имя пользователя">
-                    <span asp-validation-for="Username" class="text-danger"></span>
+                    <span asp-validation-for="Username" class="text-danger mb-3"></span>
                 </div>
                 <div class="row">
                     <input type="password" id="password" class="form-control mb-3" name="password" placeholder="Пароль">
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <span asp-validation-for="Password" class="text-danger mb-3"></span>
                     </div>
                     <div class="validation text-danger" asp-validation-summary="ModelOnly"></div>
-                    <input type="submit" class="btn btn-primary mb-3" value="Войти">
+                    <input type="submit" class="btn btn-primary mb-3 btn-block" value="Войти">
                 </form>
             </div>
         </div>
